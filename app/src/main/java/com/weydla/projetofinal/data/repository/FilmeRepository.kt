@@ -5,19 +5,12 @@ import com.weydla.projetofinal.data.model.FilmeTerror
 import com.weydla.projetofinal.data.remote.TerrorApiService
 import kotlinx.coroutines.flow.Flow
 
-/**
- * Repositório unificando Retrofit (Internet) e Room (Persistência Local)
- */
 class FilmeRepository(
     private val filmeDao: FilmeDao,
     private val apiService: TerrorApiService
 ) {
     val favoritosFlow: Flow<List<FilmeTerror>> = filmeDao.listarFavoritos()
 
-    /**
-     * Busca catálogo na internet via Retrofit e combina com clássicos de terror,
-     * garantindo estabilidade mesmo se a internet oscilar (Princípio de IHC: Prevenção e Tolerância a Erros).
-     */
     suspend fun buscarCatalogoTerror(termo: String = "horror"): List<FilmeTerror> {
         val classicosCurados = obterClassicosDoTerror()
         return try {
@@ -46,18 +39,17 @@ class FilmeRepository(
             } else {
                 val filtradosLocais = classicosCurados.filter {
                     it.titulo.contains(termo, ignoreCase = true) ||
-                        it.subgenero.contains(termo, ignoreCase = true)
+                            it.subgenero.contains(termo, ignoreCase = true)
                 }
                 filtradosLocais + convertidosDaApi
             }
         } catch (e: Exception) {
-            // Fallback seguro caso o dispositivo esteja sem internet no momento do teste
             if (termo == "horror") {
                 classicosCurados
             } else {
                 classicosCurados.filter {
                     it.titulo.contains(termo, ignoreCase = true) ||
-                        it.subgenero.contains(termo, ignoreCase = true)
+                            it.subgenero.contains(termo, ignoreCase = true)
                 }
             }
         }

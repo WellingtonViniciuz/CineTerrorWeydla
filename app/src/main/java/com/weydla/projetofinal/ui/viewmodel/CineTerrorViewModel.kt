@@ -12,10 +12,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-/**
- * Estado da Interface (UI State) seguindo boas práticas de MVVM e IHC
- * (Visibilidade do Status do Sistema: carregando, sucesso, mensagem de feedback).
- */
 data class CatalogoUiState(
     val filmes: List<FilmeTerror> = emptyList(),
     val carregando: Boolean = false,
@@ -23,9 +19,6 @@ data class CatalogoUiState(
     val mensagemFeedback: String? = null
 )
 
-/**
- * ViewModel implementando MVVM + StateFlow + Coroutines (Práticas 04 e 06)
- */
 class CineTerrorViewModel(
     private val repository: FilmeRepository
 ) : ViewModel() {

@@ -29,7 +29,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import com.weydla.projetofinal.data.model.FilmeTerror
 import com.weydla.projetofinal.ui.theme.*
 import com.weydla.projetofinal.ui.viewmodel.CatalogoUiState
@@ -373,21 +373,25 @@ fun TelaDetalhesFilme(
                             .background(TerrorSurface),
                         contentAlignment = Alignment.Center
                     ) {
-                        if (filme.posterUrl.isNotEmpty()) {
-                            AsyncImage(
-                                model = filme.posterUrl,
-                                contentDescription = "Pôster do filme ${filme.titulo}",
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.Crop
-                            )
-                        } else {
-                            Icon(
-                                imageVector = Icons.Default.Movie,
-                                contentDescription = null,
-                                tint = CrimsonPrimary,
-                                modifier = Modifier.size(48.dp)
-                            )
-                        }
+                        SubcomposeAsyncImage(
+                            model = filme.posterUrl,
+                            contentDescription = "Pôster do filme ${filme.titulo}",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop,
+                            loading = {
+                                Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                                    CircularProgressIndicator(color = CrimsonPrimary, modifier = Modifier.size(24.dp))
+                                }
+                            },
+                            error = {
+                                Icon(
+                                    imageVector = Icons.Default.Movie,
+                                    contentDescription = "Imagem indisponível",
+                                    tint = CrimsonPrimary,
+                                    modifier = Modifier.fillMaxSize().padding(16.dp)
+                                )
+                            }
+                        )
                     }
 
                     Column(modifier = Modifier.weight(1f)) {
@@ -647,21 +651,25 @@ fun CardFilmeTerror(
                     .background(TerrorSurface),
                 contentAlignment = Alignment.Center
             ) {
-                if (filme.posterUrl.isNotEmpty()) {
-                    AsyncImage(
-                        model = filme.posterUrl,
-                        contentDescription = "Capa de ${filme.titulo}",
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-                } else {
-                    Icon(
-                        imageVector = Icons.Default.Movie,
-                        contentDescription = null,
-                        tint = CrimsonPrimary,
-                        modifier = Modifier.size(36.dp)
-                    )
-                }
+                SubcomposeAsyncImage(
+                    model = filme.posterUrl,
+                    contentDescription = "Capa de ${filme.titulo}",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop,
+                    loading = {
+                        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                            CircularProgressIndicator(color = CrimsonPrimary, modifier = Modifier.size(24.dp))
+                        }
+                    },
+                    error = {
+                        Icon(
+                            imageVector = Icons.Default.Movie,
+                            contentDescription = "Imagem indisponível",
+                            tint = CrimsonPrimary,
+                            modifier = Modifier.fillMaxSize().padding(16.dp)
+                        )
+                    }
+                )
             }
 
             Spacer(modifier = Modifier.width(12.dp))

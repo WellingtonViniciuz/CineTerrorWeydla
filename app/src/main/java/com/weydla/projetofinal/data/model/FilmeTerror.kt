@@ -3,10 +3,6 @@ package com.weydla.projetofinal.data.model
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-/**
- * Entidade Room para Persistência Local (Prática 07 - Room)
- * Armazena os filmes de terror favoritados e notas pessoais da usuária.
- */
 @Entity(tableName = "filmes_favoritos")
 data class FilmeTerror(
     @PrimaryKey
@@ -22,10 +18,6 @@ data class FilmeTerror(
     val comentarioPessoal: String = ""
 )
 
-/**
- * Modelos de resposta da API Pública (TVMaze API - Prática 08 - Retrofit)
- * Documentação: https://api.tvmaze.com/search/shows?q=horror
- */
 data class TvMazeSearchResponse(
     val score: Double?,
     val show: TvMazeShowDto?
