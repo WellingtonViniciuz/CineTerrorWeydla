@@ -2,6 +2,7 @@ package com.weydla.projetofinal.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -33,9 +34,6 @@ import com.weydla.projetofinal.data.model.FilmeTerror
 import com.weydla.projetofinal.ui.theme.*
 import com.weydla.projetofinal.ui.viewmodel.CatalogoUiState
 
-/**
- * TELA 1: Catálogo Online (Retrofit + LazyColumn + Busca IHC)
- */
 @Composable
 fun TelaCatalogo(
     uiState: CatalogoUiState,
@@ -56,7 +54,6 @@ fun TelaCatalogo(
     ) {
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Barra de Pesquisa Intuitiva (IHC: Flexibilidade e Eficiência de Uso)
         OutlinedTextField(
             value = uiState.termoBusca,
             onValueChange = onBuscaChange,
@@ -92,9 +89,10 @@ fun TelaCatalogo(
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        // Chips de filtro rápido (IHC: Reconhecimento em vez de memorização)
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             AssistChip(
@@ -132,7 +130,6 @@ fun TelaCatalogo(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // IHC: Visibilidade do Status do Sistema (Indicador de progresso claro)
         if (uiState.carregando) {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -172,7 +169,6 @@ fun TelaCatalogo(
                 }
             }
         } else {
-            // Prática 05: Listas com LazyColumn
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -192,10 +188,6 @@ fun TelaCatalogo(
     }
 }
 
-/**
- * TELA 2: Favoritos Salvos no Banco Local Room (Prática 07)
- * Inclui confirmação de exclusão (IHC: Prevenção de Erros e Controle do Usuário)
- */
 @Composable
 fun TelaFavoritosRoom(
     favoritos: List<FilmeTerror>,
@@ -205,7 +197,6 @@ fun TelaFavoritosRoom(
 ) {
     var filmeParaConfirmarExclusao by remember { mutableStateOf<FilmeTerror?>(null) }
 
-    // Diálogo de confirmação antes de apagar do banco Room (Heurística de Nielsen: Prevenção de Erros)
     filmeParaConfirmarExclusao?.let { filme ->
         AlertDialog(
             onDismissRequest = { filmeParaConfirmarExclusao = null },
@@ -241,7 +232,6 @@ fun TelaFavoritosRoom(
     ) {
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Resumo estatístico da lista da usuária
         val totalAssistidos = favoritos.count { it.assistido }
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -327,9 +317,6 @@ fun TelaFavoritosRoom(
     }
 }
 
-/**
- * TELA 3: Detalhes do Filme e Anotações no Banco Room
- */
 @Composable
 fun TelaDetalhesFilme(
     filme: FilmeTerror,
@@ -348,7 +335,6 @@ fun TelaDetalhesFilme(
             .verticalScroll(scrollState)
             .padding(16.dp)
     ) {
-        // Botão de retorno claro (IHC: Liberdade e Controle do Usuário)
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
@@ -380,7 +366,6 @@ fun TelaDetalhesFilme(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    // Poster ou Ícone Temático
                     Box(
                         modifier = Modifier
                             .size(width = 110.dp, height = 160.dp)
@@ -495,7 +480,6 @@ fun TelaDetalhesFilme(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Seção de Crítica Pessoal persistida no Room
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(containerColor = TerrorCard),
@@ -530,9 +514,6 @@ fun TelaDetalhesFilme(
     }
 }
 
-/**
- * TELA 4: Sobre o Projeto e Autoria (Personalização Módulo 3)
- */
 @Composable
 fun TelaSobreWeydla() {
     Column(
@@ -638,9 +619,6 @@ private fun ItemInfo(rotulo: String, valor: String) {
     }
 }
 
-/**
- * Componente de Card da Lista Principal (LazyColumn)
- */
 @Composable
 fun CardFilmeTerror(
     filme: FilmeTerror,
@@ -730,7 +708,6 @@ fun CardFilmeTerror(
                 }
             }
 
-            // Alvo de toque mínimo de 48dp respeitando diretrizes de Acessibilidade e IHC
             IconButton(
                 onClick = onFavoritarClick,
                 modifier = Modifier
@@ -749,9 +726,6 @@ fun CardFilmeTerror(
     }
 }
 
-/**
- * Card específico da aba de Favoritos (Room) com controle de "Assistido" e "Excluir"
- */
 @Composable
 fun CardFavoritoRoom(
     filme: FilmeTerror,
@@ -834,9 +808,6 @@ fun CardFavoritoRoom(
     }
 }
 
-/**
- * Modal de Cadastro Manual de Filme de Terror no Banco Room
- */
 @Composable
 fun DialogNovoFilmeTerror(
     onDismiss: () -> Unit,
