@@ -13,45 +13,35 @@ class FilmeRepository(
 
     suspend fun buscarCatalogoTerror(termo: String = "horror"): List<FilmeTerror> {
         val classicosCurados = obterClassicosDoTerror()
-        return try {
-            val respostaApi = apiService.buscarProducoesTerror(termo)
-            val convertidosDaApi = respostaApi.mapNotNull { item ->
-                val show = item.show ?: return@mapNotNull null
-                val resumoLimpo = show.summary
-                    ?.replace(Regex("<.*?>"), "")
-                    ?.trim()
-                    .orEmpty()
-                    .ifEmpty { "Produção de mistério e terror psicológico carregada via API." }
+        val respostaApi = apiService.buscarProducoesTerror(termo)
+        val convertidosDaApi = respostaApi.mapNotNull { item ->
+            val show = item.show ?: return@mapNotNull null
+            val resumoLimpo = show.summary
+                ?.replace(Regex("<.*?>"), "")
+                ?.trim()
+                .orEmpty()
+                .ifEmpty { "Produção de mistério e terror psicológico carregada via API." }
 
-                FilmeTerror(
-                    id = show.id + 1000,
-                    titulo = show.name ?: "Título Desconhecido",
-                    ano = show.premiered?.take(4) ?: "2023",
-                    diretor = show.network?.name ?: "Estúdio Internacional",
-                    sinopse = resumoLimpo,
-                    notaImdb = show.rating?.average?.toString() ?: "7.8",
-                    posterUrl = show.image?.medium?.replace("http://", "https://") ?: "",
-                    subgenero = show.genres?.joinToString(", ")?.ifEmpty { "Terror / Suspense" } ?: "Terror / Suspense"
-                )
+            FilmeTerror(
+                id = show.id + 1000,
+                titulo = show.name ?: "Título Desconhecido",
+                ano = show.premiered?.take(4) ?: "2023",
+                diretor = show.network?.name ?: "Estúdio Internacional",
+                sinopse = resumoLimpo,
+                notaImdb = show.rating?.average?.toString() ?: "7.8",
+                posterUrl = show.image?.medium?.replace("http://", "https://") ?: "",
+                subgenero = show.genres?.joinToString(", ")?.ifEmpty { "Terror / Suspense" } ?: "Terror / Suspense"
+            )
+        }
+
+        return if (termo == "horror") {
+            classicosCurados + convertidosDaApi
+        } else {
+            val filtradosLocais = classicosCurados.filter {
+                it.titulo.contains(termo, ignoreCase = true) ||
+                        it.subgenero.contains(termo, ignoreCase = true)
             }
-            if (termo == "horror") {
-                classicosCurados + convertidosDaApi
-            } else {
-                val filtradosLocais = classicosCurados.filter {
-                    it.titulo.contains(termo, ignoreCase = true) ||
-                            it.subgenero.contains(termo, ignoreCase = true)
-                }
-                filtradosLocais + convertidosDaApi
-            }
-        } catch (e: Exception) {
-            if (termo == "horror") {
-                classicosCurados
-            } else {
-                classicosCurados.filter {
-                    it.titulo.contains(termo, ignoreCase = true) ||
-                            it.subgenero.contains(termo, ignoreCase = true)
-                }
-            }
+            filtradosLocais + convertidosDaApi
         }
     }
 

@@ -130,7 +130,34 @@ fun TelaCatalogo(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        if (uiState.carregando) {
+        if (uiState.erro != null) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Icon(
+                        imageVector = Icons.Default.Warning,
+                        contentDescription = null,
+                        tint = CrimsonPrimary,
+                        modifier = Modifier.size(64.dp)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = uiState.erro,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = TextPrimary
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Button(
+                        onClick = onExecutarBusca,
+                        colors = ButtonDefaults.buttonColors(containerColor = CrimsonPrimary)
+                    ) {
+                        Text("Tentar de Novo")
+                    }
+                }
+            }
+        } else if (uiState.carregando) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -174,14 +201,49 @@ fun TelaCatalogo(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
                 contentPadding = PaddingValues(bottom = 88.dp)
             ) {
-                items(uiState.filmes, key = { it.id }) { filme ->
-                    val ehFavorito = favoritosIds.contains(filme.id)
-                    CardFilmeTerror(
-                        filme = filme,
-                        ehFavorito = ehFavorito,
-                        onClick = { onSelecionarFilme(filme) },
-                        onFavoritarClick = { onAlternarFavorito(filme) }
-                    )
+                val filmesOffline = uiState.filmes.filter { it.id < 1000 }
+                val filmesOnline = uiState.filmes.filter { it.id >= 1000 }
+
+                if (filmesOffline.isNotEmpty()) {
+                    item {
+                        Text(
+                            text = "Catálogo Offline (Clássicos)",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = CrimsonPrimary,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                        )
+                    }
+                    items(filmesOffline, key = { it.id }) { filme ->
+                        val ehFavorito = favoritosIds.contains(filme.id)
+                        CardFilmeTerror(
+                            filme = filme,
+                            ehFavorito = ehFavorito,
+                            onClick = { onSelecionarFilme(filme) },
+                            onFavoritarClick = { onAlternarFavorito(filme) }
+                        )
+                    }
+                }
+
+                if (filmesOnline.isNotEmpty()) {
+                    item {
+                        Text(
+                            text = "Catálogo Online (API)",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = CrimsonPrimary,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(top = 16.dp, bottom = 4.dp)
+                        )
+                    }
+                    items(filmesOnline, key = { it.id }) { filme ->
+                        val ehFavorito = favoritosIds.contains(filme.id)
+                        CardFilmeTerror(
+                            filme = filme,
+                            ehFavorito = ehFavorito,
+                            onClick = { onSelecionarFilme(filme) },
+                            onFavoritarClick = { onAlternarFavorito(filme) }
+                        )
+                    }
                 }
             }
         }
