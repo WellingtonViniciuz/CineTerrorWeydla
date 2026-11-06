@@ -48,15 +48,20 @@ class CineTerrorViewModel(
     fun carregarCatalogo(termo: String = "horror") {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(carregando = true, erro = null, mensagemFeedback = null)
+            val termoBusca = termo.ifBlank { "horror" }
+            
+            val filmesOffline = repository.buscarOffline(termoBusca)
+
             try {
-                val resultado = repository.buscarCatalogoTerror(termo.ifBlank { "horror" })
+                val filmesOnline = repository.buscarOnline(termoBusca)
                 _uiState.value = _uiState.value.copy(
-                    filmes = resultado,
+                    filmes = filmesOnline + filmesOffline,
                     carregando = false
                 )
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
-                    erro = "Não foi possível carregar os dados da API. Tente novamente.",
+                    filmes = filmesOffline,
+                    erro = "Sem conexão com a internet. Exibindo apenas o catálogo offline.",
                     carregando = false
                 )
             }
